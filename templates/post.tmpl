@@ -1,0 +1,53 @@
+{#  -*- coding: utf-8 -*- #}
+{% import 'post_helper.tmpl' as helper with context %}
+{% import 'post_header.tmpl' as pheader with context %}
+{% import 'comments_helper.tmpl' as comments with context %}
+{% extends 'base.tmpl' %}
+
+{% block extra_head %}
+	{{ super() }}
+	{% if post.meta('keywords') %}
+	<meta name="keywords" content="{{ post.meta('keywords')|e }}">
+	{% endif %}
+	{% if post.description() %}
+	<meta name="description" content="{{ post.description()|e }}">
+	{% endif %}
+	<meta name="author" content="{{ post.author()|e }}">
+	{% if post.prev_post %}
+		<link rel="prev" href="{{ post.prev_post.permalink() }}" title="{{ post.prev_post.title()|e }}" type="text/html">
+	{% endif %}
+	{% if post.next_post %}
+		<link rel="next" href="{{ post.next_post.permalink() }}" title="{{ post.next_post.title()|e }}" type="text/html">
+	{% endif %}
+	{% if post.is_draft %}
+		<meta name="robots" content="noindex">
+	{% endif %}
+	{{ helper.open_graph_metadata(post) }}
+	{{ helper.twitter_card_information(post) }}
+	{{ helper.meta_translations(post) }}
+{% endblock %}
+
+{% block content %}
+<article class="post-{{ post.meta('type') }} h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article">
+	{{ pheader.html_post_header() }}
+	<div class="row">
+		<div class="col s12 m10 offset-m1">
+			<span class="flow-text">
+				{{ post.text() }}
+			</span>
+			{{ pheader.html_translations(post) }}
+			<aside class="postpromonav">
+				{{ helper.html_tags(post) }}
+				{{ helper.html_pager(post) }}
+			</aside>
+			{% if not post.meta('nocomments') and site_has_comments %}
+			<section class="comments hidden-print">
+				{{ comments.comment_form(post.permalink(absolute=True), post.title(), post._base_path) }}
+			</section>
+			{% endif %}
+		</div>
+	</div>
+	{{ helper.mathjax_script(post) }}
+</article>
+{{ comments.comment_link_script() }}
+{% endblock %}

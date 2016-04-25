@@ -1,0 +1,36 @@
+{#  -*- coding: utf-8 -*- #}
+{% import 'post_helper.tmpl' as helper with context %}
+{% import 'comments_helper.tmpl' as comments with context %}
+
+{% macro html_translations(post) %}
+	{% if post.translated_to|length > 1 %}
+		<div class="metadata posttranslations translations">
+			<span class="posttranslations-intro">{{ messages("Also available in:") }}</span>
+			{% for langname in translations|sort %}
+				{% if langname != lang and post.is_translation_available(langname) %}
+					<a href="{{ post.permalink(langname) }}" rel="alternate" hreflang="{{ langname }}">{{ messages("LANGUAGE", langname) }}</a>
+				{% endif %}
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endmacro %}
+
+{% macro html_sourcelink() %}
+	{% if show_sourcelink %}
+		<div><a href="{{ post.source_link() }}" id="sourcelink">{{ messages("Source") }}</a></div>
+	{% endif %}
+{% endmacro %}
+
+{% macro html_post_header() %}
+	<header>
+		<div class="metadata">
+			{{ html_sourcelink() }}
+			{% if post.meta('link') %}
+					<div class="linkline"><a href="{{ post.meta('link') }}">{{ messages("Original site") }}</a></div>
+			{% endif %}
+			{% if post.description() %}
+				<meta name="description" itemprop="description" content="{{ post.description()|e }}">
+			{% endif %}
+		</div>
+	</header>
+{% endmacro %}

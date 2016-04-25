@@ -1,0 +1,109 @@
+{#  -*- coding: utf-8 -*- #}
+{% import 'base_helper.tmpl' as base with context %}
+
+{% macro html_header() %}
+<header id="header">
+	{% if 'post_page' in pagekind %}
+		<div class="parallax-container row" style="position: relative; height:100vh !important ">
+	{% else %}
+		<div class="parallax-container row" style="position: relative; min-height: 50vh; height:40vh !important ">
+	{% endif %}
+		<div class="parallax" style="top:auto;">
+			<img src="/assets/img/bg.jpg">
+		</div>
+		<script>
+		$(document).ready(function(){
+			$('.parallax').parallax();
+		});
+		</script>
+		<div class="col s12">
+			{% if search_form %}
+			<span role="search">
+				{{ search_form }}
+			</span>
+			{% endif %}
+			{{ html_navigation_links() }}
+			{{ html_translation_header() }}
+		</div>
+		<div class="col s10 offset-s2">
+			{{ html_site_title() }}
+		</div>
+		{% if 'post_page' in pagekind %}
+		<div class="col s12 center-align" style="position:absolute; bottom:20px;">
+				<a href="#main">
+					<i class='fa fa-arrow-down fa-3x' aria-hidden='true'></i>
+				</a>
+		</div>
+		{% endif %}
+	</div>
+</header>
+{{ template_hooks['page_header']() }}
+{% endmacro %}
+
+{% macro html_site_title() %}
+	{% if show_blog_title %}
+		{% if 'front_page' in pagekind %}
+			<h1 id="brand" style="position: absolute; bottom: 20%;">
+				<a href="{{ abs_link(_link("root", None, lang)) }}" title="{{ blog_title|e }}" rel="home" class="col s12">
+							<span id="blog-title">{{ blog_title|e }}</span>
+				</a>
+			</h1>
+		{% endif %}
+	{% endif %}
+	{% if 'post_page' in pagekind or 'story_page' in pagekind %}
+		{% if title and not post.meta('hidetitle') %}
+		<div style="position: absolute; bottom: 5em;">
+
+			<h1 class="title" itemprop="headline name">
+				<a href="{{ post.permalink() }}" class="">{{ post.title()|e }}</a>
+			</h1>
+
+			<h6 style="padding-left: 1em; margin-bottom:0;" class=" grey-text text-lighten-3">
+				<strong>
+				{% if author_pages_generated %}
+					<a href="{{ _link('author', post.author()) }}">{{ post.author()|e }}</a>
+				{% else %}
+					{{ post.author()|e }}
+				{% endif %}
+				</strong>
+				<strong class="blue-grey-text text-lighten-3">
+					<a href="{{ post.permalink() }}" rel="bookmark">
+						<time class="published dt-published" datetime="{{ post.formatted_date('webiso') }}" itemprop="datePublished" title="{{ post.formatted_date(date_format)|e }}">
+							{{ post.formatted_date(date_format)|e }}
+						</time>
+					</a>
+				</strong>
+			</h6>
+		</div>
+		{% endif %}
+	{% endif %}
+{% endmacro %}
+
+
+{% macro html_navigation_links() %}
+<span class="fa-2x" >
+	{% for url, text in navigation_links[lang] %}
+        {% if isinstance(url, tuple) %}
+            <span class="right" style="margin: 0px 5px">
+            {% for suburl, text in url %}
+				<a href="{{ suburl }}"> {{ text }} </a><br />
+            {% endfor %}
+			</span>
+        {% else %}
+            <span class="right" style="margin: 0px 5px">
+			<a href="{{ url }}"> {{ text }} </a>
+			</span>
+		{% endif %}
+	{% endfor %}
+	{{ template_hooks['menu']() }}
+	{{ template_hooks['menu_alt']() }}
+</span>
+{% endmacro %}
+
+{% macro html_translation_header() %}
+{% if translations|length > 1 %}
+<div id="toptranslations" class="right fa-2x">
+	{{ base.html_translations() }}
+</div>
+{% endif %}
+{% endmacro %}

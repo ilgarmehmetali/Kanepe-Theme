@@ -1,0 +1,26 @@
+{#  -*- coding: utf-8 -*- #}
+{% import 'post_helper.tmpl' as helper with context %}
+{% import 'post_header.tmpl' as pheader with context %}
+{% import 'comments_helper.tmpl' as comments with context %}
+{% extends 'post.tmpl' %}
+
+{% block content %}
+<article class="storypage" itemscope="itemscope" itemtype="http://schema.org/Article">
+	<div class="row">
+		<div class="col s12 m10 offset-m1">
+			<span class="flow-text" itemprop="articleBody text">
+				{{ post.text() }}
+			</span>
+			{{ pheader.html_translations(post) }}
+
+			{% if site_has_comments and not post.meta('nocomments') %}
+				<section class="comments">
+					{{ comments.comment_form(post.permalink(absolute=True), post.title(), post.base_path) }}
+					<br />
+				</section>
+			{% endif %}
+		</div>
+	</div>
+	{{ helper.mathjax_script(post) }}
+</article>
+{% endblock %}
